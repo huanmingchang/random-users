@@ -35,11 +35,11 @@
 
 <style lang="postcss" scoped>
 .card {
-  @apply flex flex-col items-center rounded-xl bg-[#f4f2f3];
+  @apply flex flex-col items-center rounded-xl shadow-md bg-[#f4f2f3];
 }
 
 .user-avatar {
-  @apply w-11/12 rounded-xl;
+  @apply w-11/12 mt-2 rounded-xl;
 }
 
 .user-avatar-img {
