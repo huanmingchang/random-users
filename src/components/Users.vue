@@ -12,12 +12,18 @@ export default {
     Options,
   },
   setup() {
-    const num = ref(10)
+    const userCount = ref(10)
     const users = ref([])
+    const currentMode = ref('')
+    const pagesData = reactive({
+      currentPage: -1,
+      usersPerPage: 30,
+      totalPage: -1,
+    })
 
     onMounted(async () => {
       try {
-        let response = await usersAPI.getMultipleUsers(num.value)
+        let response = await usersAPI.getMultipleUsers(userCount.value)
 
         if (response.status !== 200) {
           throw new Error(response.statusText)
@@ -34,7 +40,7 @@ export default {
       }
     })
 
-    return { users }
+    return { users, currentMode, pagesData }
   },
 }
 </script>
