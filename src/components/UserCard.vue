@@ -17,13 +17,14 @@ export default {
 
 <style lang="postcss" scoped>
 .cards {
-  @apply max-w-[1280px] h-screen grid grid-cols-auto-fit auto-rows-min gap-6 mx-10 my-10;
+  @apply max-w-[1280px] h-screen grid grid-cols-auto-fit auto-rows-min gap-6 mx-10 my-10 cursor-pointer;
   @apply md:mx-12;
   @apply xl:mx-auto;
 }
 
 .card {
   @apply flex flex-col items-center rounded-xl shadow-md bg-[#f4f2f3];
+  @apply hover:scale-105;
 }
 
 .user-avatar {
