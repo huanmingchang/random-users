@@ -25,7 +25,12 @@ export default {
       totalPages.value = Math.ceil(users.value.length / usersPerPage.value)
     }
 
-    //  換頁的 function
+    // 切換顯示人數的 function
+    function changeUsersPerPage(event) {
+      usersPerPage.value = Number(event.target.value)
+    }
+
+    // 換頁的 function
     function changePage(page) {
       currentPage.value = page
     }
@@ -79,6 +84,7 @@ export default {
       totalPages,
       usersPerPage,
       currentPage,
+      changeUsersPerPage,
       changePage,
       goPrev,
       goNext,
@@ -89,7 +95,7 @@ export default {
 
 <template lang="pug">
 main
-  Options
+  Options(:users-per-page="usersPerPage" @handleValueChange="changeUsersPerPage")
   UserCard(:users="users")
   Pagination(:total-pages="totalPages" :current-page="currentPage" @handleClick="changePage" @goPrev="goPrev" @goNext="goNext")
 </template>
