@@ -16,8 +16,8 @@ export default {
       option(value="30", selected="selected") 30
       option(value="50") 50
   .mode
-    font-awesome-icon.list(icon="list")
-    font-awesome-icon.grip(icon="grip")
+    font-awesome-icon.list(icon="list" @click="$emit('handelModeChange', 'list')")
+    font-awesome-icon.grip(icon="grip" @click="$emit('handelModeChange', 'grip')")
 </template>
 
 <style lang="postcss" scoped>
