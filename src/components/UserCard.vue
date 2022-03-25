@@ -17,7 +17,7 @@ export default {
 
 <style lang="postcss" scoped>
 .cards {
-  @apply max-w-[1280px] h-screen grid grid-cols-auto-fit auto-rows-min gap-6 mx-10 my-10 cursor-pointer;
+  @apply max-w-[1280px] h-screen grid grid-cols-auto-fit auto-rows-min gap-6 mx-10 my-10 cursor-pointer overflow-scroll rounded-sm;
   @apply md:mx-12;
   @apply xl:mx-auto;
 }
