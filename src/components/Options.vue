@@ -2,14 +2,8 @@
 import { ref, reactive, onUpdated, onMounted } from 'vue'
 
 export default {
-  setup() {
-    const usersPerPage = ref(30)
-
-    onUpdated(() => {
-      console.log(usersPerPage.value)
-    })
-
-    return { usersPerPage }
+  props: {
+    usersPerPage: Number,
   },
 }
 </script>
@@ -17,13 +11,13 @@ export default {
 <template lang="pug">
 .options
   .dropdown
-    select.select(v-model="usersPerPage")
+    select.select(@change="$emit('handleValueChange', $event)")
       option(value="10") 10
       option(value="30", selected="selected") 30
       option(value="50") 50
   .mode
-    font-awesome-icon.list(icon="list")
-    font-awesome-icon.grip(icon="grip")
+    font-awesome-icon.list(icon="list" @click="$emit('handelModeChange', 'list')")
+    font-awesome-icon.grip(icon="grip" @click="$emit('handelModeChange', 'grip')")
 </template>
 
 <style lang="postcss" scoped>
