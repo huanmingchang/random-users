@@ -1,7 +1,7 @@
 <script>
 export default {
   props: {
-    users: Array,
+    filterUsers: Array,
     currentMode: String,
   },
 }
@@ -9,13 +9,13 @@ export default {
 
 <template lang="pug">
 .cards(v-if="currentMode === 'grip'")
-  .card(v-for="user in users")
+  .card(v-for="user in filterUsers")
     .user-avatar
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
 .cards-list(v-if="currentMode === 'list'")
-  .card-list(v-for="user in users")
+  .card-list(v-for="user in filterUsers")
     .user-avatar-list
       img.user-avatar-img-list(:src="user.picture.large")
     .container
