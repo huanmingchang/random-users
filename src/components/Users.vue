@@ -16,7 +16,7 @@ export default {
   setup() {
     const userCount = ref(70)
     const users = ref([])
-    const currentMode = ref('')
+    const currentMode = ref('grip')
     const totalPages = ref(1)
     const usersPerPage = ref(30)
     const currentPage = ref(1)
@@ -25,7 +25,17 @@ export default {
       totalPages.value = Math.ceil(users.value.length / usersPerPage.value)
     }
 
-    //  換頁的 function
+    // 切換顯示人數的 function
+    function changeUsersPerPage(event) {
+      usersPerPage.value = Number(event.target.value)
+    }
+
+    // 切換顯示模式的 function
+    function changeMode(mode) {
+      currentMode.value = mode
+    }
+
+    // 換頁的 function
     function changePage(page) {
       currentPage.value = page
     }
@@ -79,6 +89,8 @@ export default {
       totalPages,
       usersPerPage,
       currentPage,
+      changeUsersPerPage,
+      changeMode,
       changePage,
       goPrev,
       goNext,
@@ -89,8 +101,8 @@ export default {
 
 <template lang="pug">
 main
-  Options
-  UserCard(:users="users")
+  Options(:users-per-page="usersPerPage" @handleValueChange="changeUsersPerPage" @handelModeChange="changeMode")
+  UserCard(:users="users" :current-mode="currentMode")
   Pagination(:total-pages="totalPages" :current-page="currentPage" @handleClick="changePage" @goPrev="goPrev" @goNext="goNext")
 </template>
 
