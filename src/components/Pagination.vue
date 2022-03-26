@@ -1,5 +1,5 @@
 <script>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 export default {
   props: {
@@ -9,6 +9,18 @@ export default {
   setup(props) {
     let numShown = 3
     const pageNumbers = ref([])
+
+    onMounted(() => {
+      numShown = Math.min(numShown, props.totalPages)
+      if (props.totalPages <= numShown) {
+        pageNumbers.value = [...Array(numShown).keys()].map((i) => i + 1)
+      } else {
+        let first = props.currentPage - Math.floor(numShown / 2)
+        first = Math.max(first, 1)
+        first = Math.min(first, props.totalPages - numShown + 1)
+        pageNumbers.value = [...Array(numShown)].map((k, i) => i + first)
+      }
+    })
 
     watch(props, () => {
       numShown = Math.min(numShown, props.totalPages)
