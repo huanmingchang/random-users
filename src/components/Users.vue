@@ -1,5 +1,5 @@
 <script>
-import { ref, reactive, onMounted, onUpdated } from 'vue'
+import { ref, computed, onMounted, onUpdated } from 'vue'
 import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
@@ -16,21 +16,29 @@ export default {
   setup() {
     const userCount = ref(70)
     const users = ref([])
+    const filterUsers = ref([])
     const currentMode = ref('grip')
     const totalPages = ref(1)
     const usersPerPage = ref(30)
     const currentPage = ref(1)
 
+    // 取得每頁的人數
+    const getUsersByPage = computed(() => {
+      const startIndex = (currentPage.value - 1) * usersPerPage.value
+      return users.value.slice(startIndex, startIndex + usersPerPage.value)
+    })
+
+    // 計算總頁數
     function calculateTotalPages() {
       totalPages.value = Math.ceil(users.value.length / usersPerPage.value)
     }
 
-    // 切換顯示人數的 function
+    // 切換每頁的顯示人數
     function changeUsersPerPage(event) {
       usersPerPage.value = Number(event.target.value)
     }
 
-    // 切換顯示模式的 function
+    // 切換 list / grip mode
     function changeMode(mode) {
       currentMode.value = mode
     }
@@ -85,6 +93,7 @@ export default {
 
     return {
       users,
+      getUsersByPage,
       currentMode,
       totalPages,
       usersPerPage,
@@ -102,7 +111,7 @@ export default {
 <template lang="pug">
 main
   Options(:users-per-page="usersPerPage" @handleValueChange="changeUsersPerPage" @handelModeChange="changeMode")
-  UserCard(:users="users" :current-mode="currentMode")
+  UserCard(:filter-users="getUsersByPage" :current-mode="currentMode")
   Pagination(:total-pages="totalPages" :current-page="currentPage" @handleClick="changePage" @goPrev="goPrev" @goNext="goNext")
 </template>
 
