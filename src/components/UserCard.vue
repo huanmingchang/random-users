@@ -122,7 +122,7 @@ vue-final-modal(v-model="showModal" v-if="showModal")
 }
 
 .close {
-  @apply absolute top-2 right-4 text-[#94a7ae] text-3xl;
+  @apply absolute top-2 right-4 text-[#94a7ae] text-3xl cursor-pointer;
 }
 
 .user-avatar-modal {

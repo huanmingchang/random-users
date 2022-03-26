@@ -125,6 +125,6 @@ Spinner(v-if="isLoading")
 
 <style lang="postcss" scoped>
 main {
-  @apply h-full;
+  @apply h-full relative;
 }
 </style>
