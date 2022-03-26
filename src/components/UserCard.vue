@@ -40,6 +40,7 @@ export default {
 
 vue-final-modal(v-model="showModal" v-if="showModal") 
   .card-modal
+    .close(@click="showModal = false") &#215;
     .user-avatar-modal
       img.user-avatar-img-modal(:src="userModal.picture.large")
     .modal-info-wrapper
@@ -118,6 +119,10 @@ vue-final-modal(v-model="showModal" v-if="showModal")
 .card-modal {
   @apply absolute top-[100px] left-2/4 translate-x-[-50%] flex flex-col justify-start items-center  w-10/12 h-3/4 bg-white rounded-xl border-2 border-[#e2e8f0] min-w-[345px];
   @apply md:flex md:flex-row md:justify-start md:items-center md:w-6/12 md:h-3/4;
+}
+
+.close {
+  @apply absolute top-2 right-4 text-[#94a7ae] text-3xl;
 }
 
 .user-avatar-modal {
