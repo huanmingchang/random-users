@@ -6,6 +6,25 @@ export default {
     totalPages: Number,
     currentPage: Number,
   },
+  setup(props) {
+    let numShown = 3
+    const pageNumbers = ref([])
+
+    watch(props, () => {
+      numShown = Math.min(numShown, props.totalPages)
+      if (props.totalPages <= numShown) {
+        pageNumbers.value = [...Array(numShown).keys()].map((i) => i + 1)
+      } else {
+        let first = props.currentPage - Math.floor(numShown / 2)
+        first = Math.max(first, 1)
+        first = Math.min(first, props.totalPages - numShown + 1)
+        pageNumbers.value = [...Array(numShown)].map((k, i) => i + first)
+      }
+    })
+    return {
+      pageNumbers,
+    }
+  },
 }
 </script>
 
@@ -13,11 +32,19 @@ export default {
 nav
   ul.pagination
     li.page 
-      a.page-link(href="#" @click="$emit('goPrev')") &#60;
-    li.page(v-for="page in totalPages")
+      a.page-link(href="#" @click="$emit('goPrev')" :class="{disabled: currentPage === 1}") &#60;
+    li.page(v-if="currentPage >= 3")
+      a.page-link(href="#" @click="$emit('handleClick', 1)") 1
+    li.page(v-if="currentPage > 3")
+      a.page-link(href="#" @click="$emit('handleClick', currentPage - 3)") ...
+    li.page(v-for="page in pageNumbers")
       a.page-link(href="#" @click="$emit('handleClick', page)" :class="{active: page === currentPage}") {{ page }}
+    li.page(v-if="totalPages > 3 && totalPages - currentPage > 2")
+      a.page-link(href="#" @click="$emit('handleClick', currentPage + 3)") ...
+    li.page(v-if="totalPages > 3 && totalPages - currentPage >= 2")
+      a.page-link(href="#" @click="$emit('handleClick', totalPages)") {{totalPages}}
     li.page
-      a.page-link(href="#" @click="$emit('goNext')") &#62;
+      a.page-link(href="#" @click="$emit('goNext')" :class="{disabled: currentPage === totalPages}") &#62;
 </template>
 
 <style lang="postcss" scoped>
@@ -40,5 +67,9 @@ nav {
 
 .active {
   @apply bg-[#94a7ae];
+}
+
+.disabled {
+  @apply pointer-events-none cursor-default;
 }
 </style>
