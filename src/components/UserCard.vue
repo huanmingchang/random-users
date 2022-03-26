@@ -1,26 +1,53 @@
 <script>
+import { ref, onMounted } from 'vue'
+import { $vfm, VueFinalModal, ModalsContainer } from 'vue-final-modal'
+
 export default {
   props: {
     filterUsers: Array,
     currentMode: String,
   },
+  components: {
+    VueFinalModal,
+    ModalsContainer,
+  },
+  setup() {
+    const showModal = ref(false)
+    const userModal = ref({})
+
+    function showUserModal(user) {
+      userModal.value = user
+    }
+    return { showModal, userModal, showUserModal }
+  },
 }
 </script>
 
 <template lang="pug">
-.cards(v-if="currentMode === 'grip'")
-  .card(v-for="user in filterUsers")
+.cards(v-if="currentMode === 'grip'" )
+  .card(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
     .user-avatar
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
-.cards-list(v-if="currentMode === 'list'")
-  .card-list(v-for="user in filterUsers")
+.cards-list(v-if="currentMode === 'list'" )
+  .card-list(v-for="user in filterUsers" @click="showModal = true" @blur="showModal = false")
     .user-avatar-list
       img.user-avatar-img-list(:src="user.picture.large")
     .container
       .user-name-list {{user.name.first + ' ' +user.name.last}}
       .user-location-list {{user.location.city + ', ' + user.location.country}}
+
+vue-final-modal(v-model="showModal" v-if="showModal") 
+  .card-modal
+    .user-avatar-modal
+      img.user-avatar-img-modal(:src="userModal.picture.large")
+    .modal-info-wrapper
+      .user-name-modal {{userModal.name.first + ' ' +userModal.name.last}}
+      .user-location-modal {{userModal.location.city + ', ' + userModal.location.country}}
+      .user-email-modal {{userModal.email}}
+      .user-cell-modal {{userModal.cell}}
+      button.button(@click="showModal = false") close
 </template>
 
 <style lang="postcss" scoped>
@@ -86,5 +113,40 @@ export default {
   @apply text-sm mt-2;
   @apply md:text-lg;
   @apply lg:mt-0 lg:ml-10 lg:text-2xl;
+}
+
+.card-modal {
+  @apply absolute top-[100px] left-2/4 translate-x-[-50%] flex flex-col justify-start items-center  w-10/12 h-3/4 bg-white rounded-xl border-2 border-[#e2e8f0] min-w-[345px];
+  @apply md:flex md:flex-row md:justify-start md:items-center md:w-6/12 md:h-3/4;
+}
+
+.user-avatar-modal {
+  @apply w-3/4 p-6 rounded-xl;
+  @apply md:w-2/4;
+}
+
+.user-avatar-img-modal {
+  @apply w-full rounded-xl;
+}
+
+.modal-info-wrapper {
+  @apply flex flex-col justify-start grow pr-4;
+}
+
+.user-name-modal {
+  @apply mb-2 text-xl font-bold whitespace-normal;
+  @apply lg:mb-4 lg:text-3xl;
+}
+
+.user-location-modal,
+.user-email-modal,
+.user-cell-modal {
+  @apply text-base whitespace-normal;
+  @apply lg:text-lg;
+}
+
+.button {
+  @apply absolute bottom-6 right-6 w-20 h-10 bg-[#94a7ae] text-white text-lg rounded-lg cursor-pointer;
+  @apply hover:scale-105;
 }
 </style>
