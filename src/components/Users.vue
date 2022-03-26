@@ -14,7 +14,7 @@ export default {
     Pagination,
   },
   setup() {
-    const userCount = ref(70)
+    const userCount = ref(3010)
     const users = ref([])
     const filterUsers = ref([])
     const currentMode = ref('grip')
