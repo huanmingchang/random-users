@@ -17,7 +17,8 @@
     "sweetalert2": "^9.8.2",
     "tailwindcss": "^3",
     "vue": "^3.2.31",
-    "vue-cli-plugin-pug": "^2.0.0"
+    "vue-cli-plugin-pug": "^2.0.0",
+    "vue-final-modal": "^3.4.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.2.2",
