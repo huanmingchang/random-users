@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUpdated } from 'vue'
 import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
+import Spinner from '../components/Spinner.vue'
 import usersAPI from './../apis/users'
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
@@ -12,6 +13,7 @@ export default {
     UserCard,
     Options,
     Pagination,
+    Spinner,
   },
   setup() {
     const userCount = ref(3010)
@@ -21,6 +23,7 @@ export default {
     const totalPages = ref(1)
     const usersPerPage = ref(30)
     const currentPage = ref(1)
+    const isLoading = ref(false)
 
     // 取得每頁的人數
     const getUsersByPage = computed(() => {
@@ -68,6 +71,7 @@ export default {
 
     onMounted(async () => {
       try {
+        isLoading.value = true
         let response = await usersAPI.getMultipleUsers(userCount.value)
 
         if (response.status !== 200) {
@@ -77,7 +81,9 @@ export default {
         users.value = response.data.results
 
         calculateTotalPages()
+        isLoading.value = false
       } catch (error) {
+        isLoading.value = false
         console.log('error: ' + error)
         Swal.fire({
           icon: 'error',
@@ -103,16 +109,18 @@ export default {
       changePage,
       goPrev,
       goNext,
+      isLoading,
     }
   },
 }
 </script>
 
 <template lang="pug">
-main
+main(v-if="!isLoading")
   Options(:users-per-page="usersPerPage" @handleValueChange="changeUsersPerPage" @handelModeChange="changeMode")
   UserCard(:filter-users="getUsersByPage" :current-mode="currentMode")
   Pagination(:total-pages="totalPages" :current-page="currentPage" @handleClick="changePage" @goPrev="goPrev" @goNext="goNext")
+Spinner(v-if="isLoading")
 </template>
 
 <style lang="postcss" scoped>
