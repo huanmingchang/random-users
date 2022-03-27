@@ -3,7 +3,11 @@ import { ref } from 'vue'
 
 export default {
   props: {
-    usersPerPage: Number,
+    usersPerPage: {
+      type: Number,
+      required: true,
+      default: () => 30,
+    },
   },
   setup(props) {
     const selected = props.usersPerPage
