@@ -1,6 +1,6 @@
 <script>
 import { ref, onMounted } from 'vue'
-import { $vfm, VueFinalModal, ModalsContainer } from 'vue-final-modal'
+import { VueFinalModal, ModalsContainer } from '../vue-final-modal'
 
 export default {
   props: {
