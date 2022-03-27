@@ -16,7 +16,7 @@ export default {
     Spinner,
   },
   setup() {
-    const userCount = ref(50)
+    const userCount = ref(3010)
     const users = ref([])
     const filterUsers = ref([])
 
