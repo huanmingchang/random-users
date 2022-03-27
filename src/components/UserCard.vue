@@ -15,6 +15,7 @@ export default {
     const showModal = ref(false)
     const userModal = ref({})
 
+    // 把資料傳進 modal 中
     function showUserModal(user) {
       userModal.value = user
     }
@@ -24,12 +25,14 @@ export default {
 </script>
 
 <template lang="pug">
+//- grip mode 的樣板
 .cards(v-if="currentMode === 'grip'" )
   .card(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
     .user-avatar
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
+//- card mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
   .card-list(v-for="user in filterUsers" @click="showModal = true" @blur="showModal = false")
     .user-avatar-list
@@ -38,6 +41,7 @@ export default {
       .user-name-list {{user.name.first + ' ' +user.name.last}}
       .user-location-list {{user.location.city + ', ' + user.location.country}}
 
+//- modal
 vue-final-modal(v-model="showModal" v-if="showModal") 
   .card-modal
     .close(@click="showModal = false") &#215;

@@ -19,6 +19,8 @@ export default {
     const userCount = ref(50)
     const users = ref([])
     const filterUsers = ref([])
+
+    // 從 localStorage 裡面取回目前設定的值，如果是第一次使用就回傳預設值
     const currentMode = ref(
       JSON.parse(localStorage.getItem('current-mode')) || 'grip'
     )
@@ -31,7 +33,7 @@ export default {
     )
     const isLoading = ref(false)
 
-    // 取得每頁的人數
+    // 取得每頁的 user 資料
     const getUsersByPage = computed(() => {
       const startIndex = (currentPage.value - 1) * usersPerPage.value
       return users.value.slice(startIndex, startIndex + usersPerPage.value)
@@ -52,7 +54,7 @@ export default {
       currentMode.value = mode
     }
 
-    // 換頁的 function
+    // 換頁
     function changePage(page) {
       currentPage.value = page
     }
@@ -100,11 +102,13 @@ export default {
     })
 
     onUpdated(() => {
+      // 如果切換顯示人數之後，當前頁面大於總頁面，重新導入到第一頁
       if (currentPage.value > totalPages.value) {
         currentPage.value = 1
         localStorage.setItem('current-page', JSON.stringify(currentPage))
       }
 
+      // 資料有變更就重新計算總頁數
       calculateTotalPages()
     })
 

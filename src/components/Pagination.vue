@@ -10,6 +10,7 @@ export default {
     let numShown = 3
     const pageNumbers = ref([])
 
+    // 當頁數過多時，省略過長的資料
     onMounted(() => {
       numShown = Math.min(numShown, props.totalPages)
       if (props.totalPages <= numShown) {
