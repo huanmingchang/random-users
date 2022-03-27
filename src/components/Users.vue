@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, onMounted, onUpdated } from 'vue'
+import { ref, computed, onMounted, onUpdated, watch } from 'vue'
 import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
@@ -16,13 +16,19 @@ export default {
     Spinner,
   },
   setup() {
-    const userCount = ref(3010)
+    const userCount = ref(50)
     const users = ref([])
     const filterUsers = ref([])
-    const currentMode = ref('grip')
+    const currentMode = ref(
+      JSON.parse(localStorage.getItem('current-mode')) || 'grip'
+    )
     const totalPages = ref(1)
-    const usersPerPage = ref(30)
-    const currentPage = ref(1)
+    const usersPerPage = ref(
+      JSON.parse(localStorage.getItem('users-per-page')) || 30
+    )
+    const currentPage = ref(
+      JSON.parse(localStorage.getItem('current-page')) || 1
+    )
     const isLoading = ref(false)
 
     // 取得每頁的人數
@@ -96,6 +102,16 @@ export default {
     onUpdated(() => {
       calculateTotalPages()
     })
+
+    watch(
+      [currentMode, currentPage, usersPerPage],
+      ([currentMode, currentPage, usersPerPage]) => {
+        console.log(currentMode)
+        localStorage.setItem('current-mode', JSON.stringify(currentMode))
+        localStorage.setItem('current-page', JSON.stringify(currentPage))
+        localStorage.setItem('users-per-page', JSON.stringify(usersPerPage))
+      }
+    )
 
     return {
       users,
