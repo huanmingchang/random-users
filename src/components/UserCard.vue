@@ -1,11 +1,19 @@
 <script>
 import { ref, onMounted } from 'vue'
-import { VueFinalModal, ModalsContainer } from '../vue-final-modal'
+import { VueFinalModal, ModalsContainer } from 'vue-final-modal'
 
 export default {
   props: {
-    filterUsers: Array,
-    currentMode: String,
+    filterUsers: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+    currentMode: {
+      type: String,
+      required: true,
+      default: () => 'grip',
+    },
   },
   components: {
     VueFinalModal,
@@ -13,7 +21,21 @@ export default {
   },
   setup() {
     const showModal = ref(false)
-    const userModal = ref({})
+    const userModal = ref({
+      picture: {
+        large: '',
+      },
+      name: {
+        first: '',
+        last: '',
+      },
+      location: {
+        city: '',
+        country: '',
+      },
+      email: '',
+      cell: '',
+    })
 
     // 把資料傳進 modal 中
     function showUserModal(user) {
@@ -42,7 +64,7 @@ export default {
       .user-location-list {{user.location.city + ', ' + user.location.country}}
 
 //- modal
-vue-final-modal(v-model="showModal" v-if="showModal") 
+vue-final-modal(v-model="showModal") 
   .card-modal
     .close(@click="showModal = false") &#215;
     .user-avatar-modal

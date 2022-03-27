@@ -3,8 +3,16 @@ import { ref, watch, onMounted } from 'vue'
 
 export default {
   props: {
-    totalPages: Number,
-    currentPage: Number,
+    totalPages: {
+      type: Number,
+      required: true,
+      default: () => 1,
+    },
+    currentPage: {
+      type: Number,
+      required: true,
+      default: () => 1,
+    },
   },
   setup(props) {
     let numShown = 3
