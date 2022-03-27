@@ -56,7 +56,7 @@ export default {
     .user-location {{user.location.city + ', ' + user.location.country}}
 //- card mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
-  .card-list(v-for="user in filterUsers" @click="showModal = true" @blur="showModal = false")
+  .card-list(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
     .user-avatar-list
       img.user-avatar-img-list(:src="user.picture.large")
     .container
