@@ -22,7 +22,7 @@ export default {
     const currentMode = ref(
       JSON.parse(localStorage.getItem('current-mode')) || 'grip'
     )
-    const totalPages = ref(1)
+    const totalPages = ref(JSON.parse(localStorage.getItem('total-pages')) || 1)
     const usersPerPage = ref(
       JSON.parse(localStorage.getItem('users-per-page')) || 30
     )
@@ -100,16 +100,21 @@ export default {
     })
 
     onUpdated(() => {
+      if (currentPage.value > totalPages.value) {
+        currentPage.value = 1
+        localStorage.setItem('current-page', JSON.stringify(currentPage))
+      }
+
       calculateTotalPages()
     })
 
     watch(
-      [currentMode, currentPage, usersPerPage],
-      ([currentMode, currentPage, usersPerPage]) => {
-        console.log(currentMode)
+      [currentMode, currentPage, usersPerPage, totalPages],
+      ([currentMode, currentPage, usersPerPage, totalPages]) => {
         localStorage.setItem('current-mode', JSON.stringify(currentMode))
         localStorage.setItem('current-page', JSON.stringify(currentPage))
         localStorage.setItem('users-per-page', JSON.stringify(usersPerPage))
+        localStorage.setItem('total-pages', JSON.stringify(totalPages))
       }
     )
 
