@@ -1,9 +1,14 @@
 <script>
-import { ref, reactive, onUpdated, onMounted } from 'vue'
+import { ref } from 'vue'
 
 export default {
   props: {
     usersPerPage: Number,
+  },
+  setup(props) {
+    const selected = props.usersPerPage
+
+    return { selected }
   },
 }
 </script>
@@ -11,9 +16,9 @@ export default {
 <template lang="pug">
 .options
   .dropdown
-    select.select(@change="$emit('handleValueChange', $event)")
+    select.select(v-model="selected" @change="$emit('handleValueChange', $event)")
       option(value="10") 10
-      option(value="30", selected="selected") 30
+      option(value="30" select="selected") 30
       option(value="50") 50
   .mode
     font-awesome-icon.list(icon="list" @click="$emit('handelModeChange', 'list')")
