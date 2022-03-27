@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, onMounted, onUpdated } from 'vue'
+import { ref, computed, onMounted, onUpdated, watch } from 'vue'
 import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
@@ -19,13 +19,21 @@ export default {
     const userCount = ref(3010)
     const users = ref([])
     const filterUsers = ref([])
-    const currentMode = ref('grip')
-    const totalPages = ref(1)
-    const usersPerPage = ref(30)
-    const currentPage = ref(1)
+
+    // 從 localStorage 裡面取回目前設定的值，如果是第一次使用就回傳預設值
+    const currentMode = ref(
+      JSON.parse(localStorage.getItem('current-mode')) || 'grip'
+    )
+    const totalPages = ref(JSON.parse(localStorage.getItem('total-pages')) || 1)
+    const usersPerPage = ref(
+      JSON.parse(localStorage.getItem('users-per-page')) || 30
+    )
+    const currentPage = ref(
+      JSON.parse(localStorage.getItem('current-page')) || 1
+    )
     const isLoading = ref(false)
 
-    // 取得每頁的人數
+    // 取得每頁的 user 資料
     const getUsersByPage = computed(() => {
       const startIndex = (currentPage.value - 1) * usersPerPage.value
       return users.value.slice(startIndex, startIndex + usersPerPage.value)
@@ -46,7 +54,7 @@ export default {
       currentMode.value = mode
     }
 
-    // 換頁的 function
+    // 換頁
     function changePage(page) {
       currentPage.value = page
     }
@@ -94,8 +102,25 @@ export default {
     })
 
     onUpdated(() => {
+      // 如果切換顯示人數之後，當前頁面大於總頁面，重新導入到第一頁
+      if (currentPage.value > totalPages.value) {
+        currentPage.value = 1
+        localStorage.setItem('current-page', JSON.stringify(currentPage))
+      }
+
+      // 資料有變更就重新計算總頁數
       calculateTotalPages()
     })
+
+    watch(
+      [currentMode, currentPage, usersPerPage, totalPages],
+      ([currentMode, currentPage, usersPerPage, totalPages]) => {
+        localStorage.setItem('current-mode', JSON.stringify(currentMode))
+        localStorage.setItem('current-page', JSON.stringify(currentPage))
+        localStorage.setItem('users-per-page', JSON.stringify(usersPerPage))
+        localStorage.setItem('total-pages', JSON.stringify(totalPages))
+      }
+    )
 
     return {
       users,
@@ -125,6 +150,6 @@ Spinner(v-if="isLoading")
 
 <style lang="postcss" scoped>
 main {
-  @apply h-full;
+  @apply h-full relative;
 }
 </style>
