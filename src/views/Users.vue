@@ -4,7 +4,7 @@ import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
 import Spinner from '../components/Spinner.vue'
-import usersAPI from './../apis/users'
+import usersAPI from '../apis/users'
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 

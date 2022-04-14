@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import router from './router'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faList } from '@fortawesome/free-solid-svg-icons'
@@ -11,4 +12,7 @@ import './assets/tailwind.css'
 library.add(faList)
 library.add(faGrip)
 
-createApp(App).component('font-awesome-icon', FontAwesomeIcon).mount('#app')
+createApp(App)
+  .component('font-awesome-icon', FontAwesomeIcon)
+  .use(router)
+  .mount('#app')
