@@ -13,6 +13,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "autoprefixer": "^10",
     "axios": "^0.19.2",
+    "firebase": "^9.6.10",
     "postcss": "^8",
     "sweetalert2": "^9.8.2",
     "tailwindcss": "^3",
