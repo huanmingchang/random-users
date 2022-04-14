@@ -1,6 +1,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { VueFinalModal, ModalsContainer } from 'vue-final-modal'
+import ButtonComponent from './ButtonComponent.vue'
 
 export default {
   props: {
@@ -18,6 +19,7 @@ export default {
   components: {
     VueFinalModal,
     ModalsContainer,
+    ButtonComponent,
   },
   setup() {
     const showModal = ref(false)
@@ -41,7 +43,13 @@ export default {
     function showUserModal(user) {
       userModal.value = user
     }
-    return { showModal, userModal, showUserModal }
+
+    // 將 user 加入最愛
+    function addFavorite() {
+      console.log('add')
+    }
+
+    return { showModal, userModal, showUserModal, addFavorite }
   },
 }
 </script>
@@ -54,6 +62,7 @@ export default {
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
+    ButtonComponent.mb-2(:text="'add'" @click.stop.prevent="showModal = false; addFavorite()")
 //- card mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
   .card-list(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
@@ -62,6 +71,7 @@ export default {
     .container
       .user-name-list {{user.name.first + ' ' +user.name.last}}
       .user-location-list {{user.location.city + ', ' + user.location.country}}
+    ButtonComponent.self-center.mr-4(:text="'add'" @click.stop.prevent="showModal = false; addFavorite()")
 
 //- modal
 vue-final-modal(v-model="showModal") 
@@ -74,7 +84,7 @@ vue-final-modal(v-model="showModal")
       .user-location-modal {{userModal.location.city + ', ' + userModal.location.country}}
       .user-email-modal {{userModal.email}}
       .user-cell-modal {{userModal.cell}}
-      button.button(@click="showModal = false") close
+      ButtonComponent.absolute.bottom-6.right-6(:text="'close'" @click.stop.prevent="showModal = false")
 </template>
 
 <style lang="postcss" scoped>
@@ -174,10 +184,5 @@ vue-final-modal(v-model="showModal")
 .user-cell-modal {
   @apply text-base whitespace-normal;
   @apply lg:text-lg;
-}
-
-.button {
-  @apply absolute bottom-6 right-6 w-20 h-10 bg-[#94a7ae] text-white text-lg rounded-lg cursor-pointer;
-  @apply hover:scale-105;
 }
 </style>
