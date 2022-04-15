@@ -52,11 +52,17 @@ export default {
     async function addFavorite(user) {
       try {
         const newDoc = await addDoc(favoriteCollection, {
-          last: user.name.last,
-          first: user.name.first,
-          picture: user.picture.large,
-          city: user.location.city,
-          country: user.location.country,
+          picture: {
+            large: user.picture.large,
+          },
+          name: {
+            first: user.name.first,
+            last: user.name.last,
+          },
+          location: {
+            city: user.location.city,
+            country: user.location.country,
+          },
           email: user.email,
           cell: user.cell,
         })
@@ -89,7 +95,8 @@ export default {
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
-    ButtonComponent.mb-2(:text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
+    ButtonComponent.mb-2(v-if="$route.name === '/users'" :text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
+    ButtonComponent.mb-2.remove(:text="'remove'" @click.stop.prevent="showModal = false")
 //- card mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
   .card-list(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
@@ -122,7 +129,7 @@ vue-final-modal(v-model="showModal")
 }
 
 .card {
-  @apply flex flex-col items-center rounded-xl shadow-md bg-[#f4f2f3];
+  @apply flex flex-col items-center rounded-xl shadow-md bg-[#f4f2f3] max-w-[400px];
   @apply hover:scale-105;
 }
 
@@ -211,5 +218,9 @@ vue-final-modal(v-model="showModal")
 .user-cell-modal {
   @apply text-base whitespace-normal;
   @apply lg:text-lg;
+}
+
+.remove {
+  @apply bg-red-500;
 }
 </style>
