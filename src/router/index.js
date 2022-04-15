@@ -13,6 +13,11 @@ const routes = [
     component: Users,
   },
   {
+    path: '/favorite',
+    name: 'favorite',
+    component: () => import('../views/Favorite.vue'),
+  },
+  {
     path: '/:catchAll(.*)',
     name: 'Not-found',
     component: () => import('../views/NotFound.vue'),
