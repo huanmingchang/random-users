@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { VueFinalModal, ModalsContainer } from 'vue-final-modal'
 import ButtonComponent from './ButtonComponent.vue'
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+import { db } from '../firebase.js'
+import { collection, addDoc } from 'firebase/firestore'
 
 export default {
   props: {
@@ -43,10 +47,33 @@ export default {
     function showUserModal(user) {
       userModal.value = user
     }
+    // 把 user 加入 favorite 當中
+    const favoriteCollection = collection(db, 'favorite')
+    async function addFavorite(user) {
+      try {
+        const newDoc = await addDoc(favoriteCollection, {
+          last: user.name.last,
+          first: user.name.first,
+          picture: user.picture.large,
+          city: user.location.city,
+          country: user.location.country,
+          email: user.email,
+          cell: user.cell,
+        })
 
-    // 將 user 加入最愛
-    function addFavorite() {
-      console.log('add')
+        Swal.fire({
+          icon: 'success',
+          title: 'Added into favorite',
+          text: 'You can view the lists in favorite page',
+        })
+      } catch (error) {
+        console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong. Please try again later',
+        })
+      }
     }
 
     return { showModal, userModal, showUserModal, addFavorite }
@@ -62,7 +89,7 @@ export default {
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
-    ButtonComponent.mb-2(:text="'add'" @click.stop.prevent="showModal = false; addFavorite()")
+    ButtonComponent.mb-2(:text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
 //- card mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
   .card-list(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
@@ -71,7 +98,7 @@ export default {
     .container
       .user-name-list {{user.name.first + ' ' +user.name.last}}
       .user-location-list {{user.location.city + ', ' + user.location.country}}
-    ButtonComponent.self-center.mr-4(:text="'add'" @click.stop.prevent="showModal = false; addFavorite()")
+    ButtonComponent.self-center.mr-4(:text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
 
 //- modal
 vue-final-modal(v-model="showModal") 
