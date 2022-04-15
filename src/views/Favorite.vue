@@ -1,5 +1,5 @@
 <script>
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUpdated, watch } from 'vue'
 import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
@@ -20,32 +20,70 @@ export default {
     let favoriteUser = ref([])
     const isLoading = ref(false)
 
-    //   // 從 localStorage 裡面取回目前設定的值，如果是第一次使用就回傳預設值
-    //   const currentMode = ref(
-    //     JSON.parse(localStorage.getItem('current-mode')) || 'grip'
-    //   )
-    //   const usersPerPage = ref(
-    //     JSON.parse(localStorage.getItem('users-per-page')) || 30
-    //   )
-    //   const isLoading = ref(false)
-    //   // 切換每頁的顯示人數
-    //   function changeUsersPerPage(event) {
-    //     usersPerPage.value = Number(event.target.value)
-    //   }
-    //   // 切換 list / grip mode
-    //   function changeMode(mode) {
-    //     currentMode.value = mode
-    //   }
-    //   return {
-    //     currentMode,
-    //     usersPerPage,
-    //     changeUsersPerPage,
-    //     changeMode,
-    //     changePage,
-    //     goPrev,
-    //     goNext,
-    //     isLoading,
-    //   }
+    // 從 localStorage 裡面取回目前設定的值，如果是第一次使用就回傳預設值
+    const currentMode = ref(
+      JSON.parse(localStorage.getItem('current-mode')) || 'grip'
+    )
+    const usersPerPage = ref(
+      JSON.parse(localStorage.getItem('users-per-page')) || 30
+    )
+
+    const totalPages = ref(
+      JSON.parse(localStorage.getItem('favorite-total-pages')) || 1
+    )
+
+    const currentPage = ref(
+      JSON.parse(localStorage.getItem('favorite-current-page')) || 1
+    )
+
+    // 取得每頁的 user 資料
+    const getUsersByPage = computed(() => {
+      const startIndex = (currentPage.value - 1) * usersPerPage.value
+      return favoriteUser.value.slice(
+        startIndex,
+        startIndex + usersPerPage.value
+      )
+    })
+
+    // 計算總頁數
+    function calculateTotalPages() {
+      totalPages.value = Math.ceil(
+        favoriteUser.value.length / usersPerPage.value
+      )
+    }
+
+    // 切換每頁的顯示人數
+    function changeUsersPerPage(event) {
+      usersPerPage.value = Number(event.target.value)
+    }
+
+    // 切換 list / grip mode
+    function changeMode(mode) {
+      currentMode.value = mode
+    }
+
+    // 換頁
+    function changePage(page) {
+      currentPage.value = page
+    }
+
+    // 前往上一頁
+    function goPrev() {
+      if (currentPage.value === 1) {
+        return
+      }
+
+      currentPage.value--
+    }
+
+    // 前往下一頁
+    function goNext() {
+      if (currentPage.value === totalPages.value) {
+        return
+      }
+
+      currentPage.value++
+    }
 
     // fetch 資料庫資料
     onMounted(async function fetchFavorite() {
@@ -58,6 +96,7 @@ export default {
           favoriteUser.value.push({ ...doc.data(), id: doc.id })
         })
 
+        calculateTotalPages()
         isLoading.value = false
       } catch (error) {
         console.log(error)
@@ -70,6 +109,33 @@ export default {
       }
     })
 
+    onUpdated(() => {
+      // 如果切換顯示人數之後，當前頁面大於總頁面，重新導入到第一頁
+      if (currentPage.value > totalPages.value) {
+        currentPage.value = 1
+        localStorage.setItem(
+          'favorite-current-page',
+          JSON.stringify(currentPage)
+        )
+      }
+
+      // 資料有變更就重新計算總頁數
+      calculateTotalPages()
+    })
+
+    watch(
+      [currentMode, currentPage, usersPerPage, totalPages],
+      ([currentMode, currentPage, usersPerPage, totalPages]) => {
+        localStorage.setItem('current-mode', JSON.stringify(currentMode))
+        localStorage.setItem(
+          'favorite-current-page',
+          JSON.stringify(currentPage)
+        )
+        localStorage.setItem('users-per-page', JSON.stringify(usersPerPage))
+        localStorage.setItem('favorite-total-pages', JSON.stringify(totalPages))
+      }
+    )
+
     // 接受子層傳回的事件並更新 favoriteUser 資料
     function updateFavorite(user) {
       favoriteUser.value = favoriteUser.value.filter(
@@ -81,6 +147,16 @@ export default {
       favoriteUser,
       updateFavorite,
       isLoading,
+      currentMode,
+      usersPerPage,
+      changeUsersPerPage,
+      changeMode,
+      changePage,
+      totalPages,
+      currentPage,
+      getUsersByPage,
+      goPrev,
+      goNext,
     }
   },
 }
@@ -90,7 +166,10 @@ export default {
 Spinner(v-if="isLoading")
 main(v-else)
   .no-content(v-if="!favoriteUser.length") There is no favorite user yet.
-  UserCard(:filter-users="favoriteUser" v-else @update-favorite="updateFavorite")
+  div(v-else)
+    Options(:users-per-page="usersPerPage" @handleValueChange="changeUsersPerPage" @handelModeChange="changeMode")
+    UserCard(:filter-users="getUsersByPage" :current-mode="currentMode"  @update-favorite="updateFavorite")
+    Pagination(:total-pages="totalPages" :current-page="currentPage" @handleClick="changePage" @goPrev="goPrev" @goNext="goNext")
 </template>
 
 <style lang="postcss" scoped>

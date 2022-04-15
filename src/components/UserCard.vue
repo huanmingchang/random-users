@@ -126,7 +126,7 @@ export default {
       .user-name-list {{user.name.first + ' ' +user.name.last}}
       .user-location-list {{user.location.city + ', ' + user.location.country}}
     ButtonComponent.self-center.mr-4(v-if="$route.name === 'users'" :text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
-    ButtonComponent.self-center.mr-4.remove(v-else :text="'remove'" @click.stop.prevent="showModal = false; deleteFavorite(user)")
+    ButtonComponent.self-center.mr-4.remove(v-else :text="'remove'" @click.stop.prevent="showModal = false; deleteFavorite(user); $emit('updateFavorite', user)")
 
 //- modal
 vue-final-modal(v-model="showModal") 
