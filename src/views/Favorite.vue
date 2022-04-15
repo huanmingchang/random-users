@@ -85,6 +85,13 @@ export default {
       currentPage.value++
     }
 
+    // 接受子層傳回的事件並更新 favoriteUser 資料
+    function updateFavorite(user) {
+      favoriteUser.value = favoriteUser.value.filter(
+        (_user) => _user.id !== user.id
+      )
+    }
+
     // fetch 資料庫資料
     onMounted(async function fetchFavorite() {
       try {
@@ -135,13 +142,6 @@ export default {
         localStorage.setItem('favorite-total-pages', JSON.stringify(totalPages))
       }
     )
-
-    // 接受子層傳回的事件並更新 favoriteUser 資料
-    function updateFavorite(user) {
-      favoriteUser.value = favoriteUser.value.filter(
-        (_user) => _user.id !== user.id
-      )
-    }
 
     return {
       favoriteUser,
