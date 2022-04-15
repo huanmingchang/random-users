@@ -1,4 +1,5 @@
-import firebase from 'firebase'
+import { initializeApp } from 'firebase/app'
+import { getFirestore } from 'firebase/firestore'
 
 const config = {
   apiKey: 'AIzaSyDxJCiOe3f8FCN5vi9_2m-OqNCSGRs-4D0',
@@ -10,15 +11,5 @@ const config = {
   measurementId: 'G-3N0QFP8BQF',
 }
 
-const firebaseApp = firebase.initializeApp(config)
-
-const db = firebase.firestore()
-const favoriteCollection = db.collection('favorite')
-
-export const addFavorite = (user) => {
-  return favoriteCollection.add(user)
-}
-
-export const removeFavorite = (id) => {
-  return favoriteCollection.doc(id).delete()
-}
+const app = initializeApp(config)
+export const db = getFirestore(app)
