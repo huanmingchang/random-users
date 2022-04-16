@@ -1,4 +1,34 @@
-<script setup></script>
+<script>
+import { getAuth, signOut } from 'firebase/auth'
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
+export default {
+  setup() {
+    const signout = () => {
+      const auth = getAuth()
+      signOut(auth)
+        .then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Signout successfully',
+            text: 'See you next time',
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong. Please try again later',
+          })
+        })
+    }
+
+    return { signout }
+  },
+}
+</script>
 
 <template lang="pug">
 nav.nav Random Users
@@ -7,11 +37,13 @@ nav.nav Random Users
       li.home(to="/users") Home
     router-link(to="/favorite")
       li.favorite Favorite
+  div.user Hello, user
+  button.signout(@click="signout") Signout
 </template>
 
 <style lang="postcss" scoped>
 .nav {
-  @apply flex flex-row items-center justify-center h-10 w-screen text-xl font-bold text-[#222222] bg-[#94a7ae];
+  @apply flex flex-row items-center justify-center h-10 w-screen text-xl font-bold text-[#222222] bg-[#94a7ae] relative;
   @apply md:justify-start md:pl-8 md:h-12 md:text-2xl;
   @apply lg:pl-14 lg:h-14 lg:text-3xl;
 }
@@ -34,5 +66,18 @@ nav.nav Random Users
 
 .router-link-exact-active {
   @apply underline;
+}
+
+.signout {
+  @apply text-sm cursor-pointer absolute top-2/4 right-10 translate-y-[-50%] border-[1px] border-[#222222] p-1 rounded;
+  @apply md:right-12;
+  @apply hover:scale-105;
+}
+
+.user {
+  @apply text-sm  absolute top-2/4 right-28 translate-y-[-50%];
+  @apply md:right-32 md:text-base;
+  @apply lg:text-lg;
+  @apply hover:underline;
 }
 </style>
