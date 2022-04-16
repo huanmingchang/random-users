@@ -1,9 +1,11 @@
 <script>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
+  signOut,
 } from 'firebase/auth'
 import { collection, addDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase.js'
@@ -16,6 +18,7 @@ export default {
     const name = ref('')
     const email = ref('')
     const password = ref('')
+    const router = useRouter()
 
     const register = () => {
       const auth = getAuth()
@@ -25,6 +28,10 @@ export default {
           updateProfile(auth.currentUser, {
             displayName: name.value,
           })
+
+          signOut(auth)
+
+          router.push('/login')
         })
         .catch((error) => {
           console.log(error)

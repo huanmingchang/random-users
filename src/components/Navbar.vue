@@ -6,7 +6,7 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 
 export default {
   setup() {
-    const currentUser = ref('')
+    const currentUser = ref('user')
 
     onMounted(() => {
       const auth = getAuth()
@@ -15,7 +15,7 @@ export default {
       if (user !== null) {
         currentUser.value = user.displayName
       } else {
-        currentUser.value = 'User'
+        currentUser.value = 'user'
       }
     })
 
