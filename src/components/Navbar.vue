@@ -1,10 +1,24 @@
 <script>
 import { getAuth, signOut } from 'firebase/auth'
+import { ref, onMounted } from 'vue'
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 
 export default {
   setup() {
+    const currentUser = ref('')
+
+    onMounted(() => {
+      const auth = getAuth()
+      const user = auth.currentUser
+
+      if (user !== null) {
+        currentUser.value = user.displayName
+      } else {
+        currentUser.value = 'User'
+      }
+    })
+
     const signout = () => {
       const auth = getAuth()
       signOut(auth)
@@ -25,7 +39,7 @@ export default {
         })
     }
 
-    return { signout }
+    return { currentUser, signout }
   },
 }
 </script>
@@ -37,7 +51,7 @@ nav.nav Random Users
       li.home(to="/users") Home
     router-link(to="/favorite")
       li.favorite Favorite
-  div.user Hello, user
+  div.user Hello, {{currentUser}}
   button.signout(@click="signout") Signout
 </template>
 

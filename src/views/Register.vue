@@ -1,11 +1,19 @@
 <script>
 import { ref } from 'vue'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth'
+import { collection, addDoc, doc } from 'firebase/firestore'
+import { db } from '../firebase.js'
+
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 
 export default {
   setup() {
+    const name = ref('')
     const email = ref('')
     const password = ref('')
 
@@ -14,6 +22,9 @@ export default {
       createUserWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
           const user = userCredential.user
+          updateProfile(auth.currentUser, {
+            displayName: name.value,
+          })
         })
         .catch((error) => {
           console.log(error)
@@ -56,6 +67,7 @@ export default {
     }
 
     return {
+      name,
       email,
       password,
       register,
@@ -68,7 +80,7 @@ export default {
 .container
   h1 Register
   form(@submit.prevent="register")
-    //- input(type="text" placeholder="Name...")
+    input(type="text" placeholder="Name..." v-model="name")
     input(type="text" placeholder="Email..." v-model="email")
     input(type="password" placeholder="password..." v-model="password")
     input(type="submit" value="Register")
