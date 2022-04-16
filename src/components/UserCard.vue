@@ -5,7 +5,7 @@ import ButtonComponent from './ButtonComponent.vue'
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import { db } from '../firebase.js'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore'
 
 export default {
   props: {
@@ -25,6 +25,7 @@ export default {
     ModalsContainer,
     ButtonComponent,
   },
+  emits: ['updateFavorite'],
   setup() {
     const showModal = ref(false)
     const userModal = ref({
@@ -52,11 +53,17 @@ export default {
     async function addFavorite(user) {
       try {
         const newDoc = await addDoc(favoriteCollection, {
-          last: user.name.last,
-          first: user.name.first,
-          picture: user.picture.large,
-          city: user.location.city,
-          country: user.location.country,
+          picture: {
+            large: user.picture.large,
+          },
+          name: {
+            first: user.name.first,
+            last: user.name.last,
+          },
+          location: {
+            city: user.location.city,
+            country: user.location.country,
+          },
           email: user.email,
           cell: user.cell,
         })
@@ -76,7 +83,26 @@ export default {
       }
     }
 
-    return { showModal, userModal, showUserModal, addFavorite }
+    // 把 user 從 favorite 當中移除
+    async function deleteFavorite(user) {
+      try {
+        const response = deleteDoc(doc(db, 'favorite', user.id))
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted from favorite',
+          text: 'You have deleted this user from favorite page',
+        })
+      } catch (error) {
+        console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong. Please try again later',
+        })
+      }
+    }
+
+    return { showModal, userModal, showUserModal, addFavorite, deleteFavorite }
   },
 }
 </script>
@@ -89,7 +115,8 @@ export default {
       img.user-avatar-img(:src="user.picture.large")
     .user-name {{user.name.first + ' ' +user.name.last}}
     .user-location {{user.location.city + ', ' + user.location.country}}
-    ButtonComponent.mb-2(:text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
+    ButtonComponent.mb-2(v-if="$route.name === 'users'" :text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
+    ButtonComponent.mb-2.remove(v-else :text="'remove'" @click.stop.prevent="showModal = false; deleteFavorite(user); $emit('updateFavorite', user)")
 //- card mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
   .card-list(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
@@ -98,7 +125,8 @@ export default {
     .container
       .user-name-list {{user.name.first + ' ' +user.name.last}}
       .user-location-list {{user.location.city + ', ' + user.location.country}}
-    ButtonComponent.self-center.mr-4(:text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
+    ButtonComponent.self-center.mr-4(v-if="$route.name === 'users'" :text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
+    ButtonComponent.self-center.mr-4.remove(v-else :text="'remove'" @click.stop.prevent="showModal = false; deleteFavorite(user); $emit('updateFavorite', user)")
 
 //- modal
 vue-final-modal(v-model="showModal") 
@@ -122,7 +150,7 @@ vue-final-modal(v-model="showModal")
 }
 
 .card {
-  @apply flex flex-col items-center rounded-xl shadow-md bg-[#f4f2f3];
+  @apply flex flex-col items-center rounded-xl shadow-md bg-[#f4f2f3] max-w-[400px];
   @apply hover:scale-105;
 }
 
@@ -211,5 +239,9 @@ vue-final-modal(v-model="showModal")
 .user-cell-modal {
   @apply text-base whitespace-normal;
   @apply lg:text-lg;
+}
+
+.remove {
+  @apply bg-red-500;
 }
 </style>
