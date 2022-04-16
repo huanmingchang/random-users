@@ -1,16 +1,76 @@
 <script>
+import { ref } from 'vue'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
 export default {
-  setup() {},
+  setup() {
+    const email = ref('')
+    const password = ref('')
+
+    const register = () => {
+      const auth = getAuth()
+      createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+          const user = userCredential.user
+        })
+        .catch((error) => {
+          console.log(error)
+          email.value = ''
+          password.value = ''
+
+          if (error.message.includes('email-already-in-use')) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'This email has been taken',
+              text: 'Please use another email',
+            })
+            return
+          }
+
+          if (error.message.includes('invalid-email')) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Please enter valid email',
+              text: 'Email example: example@example.com',
+            })
+            return
+          }
+
+          if (error.message.includes('at least 6 characters')) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Please enter valid password',
+              text: 'Password should be longer than 6 characters',
+            })
+            return
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong. Please try again later',
+          })
+        })
+    }
+
+    return {
+      email,
+      password,
+      register,
+    }
+  },
 }
 </script>
 
 <template lang="pug">
 .container
   h1 Register
-  form 
-    input(type="text" placeholder="Name...")
-    input(type="text" placeholder="Email...")
-    input(type="password" placeholder="password...")
+  form(@submit.prevent="register")
+    //- input(type="text" placeholder="Name...")
+    input(type="text" placeholder="Email..." v-model="email")
+    input(type="password" placeholder="password..." v-model="password")
     input(type="submit" value="Register")
   div.wrapper
     span Have an account?

@@ -1,15 +1,68 @@
 <script>
+import { ref } from 'vue'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
 export default {
-  setup() {},
+  setup() {
+    const email = ref('')
+    const password = ref('')
+
+    const login = () => {
+      const auth = getAuth()
+      signInWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+          const user = userCredential.user
+        })
+        .catch((error) => {
+          console.log(error)
+          email.value = ''
+          password.value = ''
+          if (
+            error.message.includes('user-not-found') ||
+            error.message.includes('wrong-password')
+          ) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Oops...',
+              text: 'Wrong email or password',
+            })
+            return
+          }
+
+          if (error.message.includes('invalid-email')) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Oops...',
+              text: 'Please enter valid email',
+            })
+            return
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong. Please try again later',
+          })
+        })
+    }
+
+    return {
+      email,
+      password,
+      login,
+    }
+  },
 }
 </script>
 
 <template lang="pug">
 .container
   h1 Login
-  form 
-    input(type="text" placeholder="Email...")
-    input(type="password" placeholder="password...")
+  form(@submit.prevent="login")
+    input(type="text" placeholder="Email..." v-model="email")
+    input(type="password" placeholder="password..."  v-model="password")
     input(type="submit" value="Login")
   div.wrapper
     span Need an account?
