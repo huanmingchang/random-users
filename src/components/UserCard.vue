@@ -5,7 +5,7 @@ import ButtonComponent from './ButtonComponent.vue'
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import { db } from '../firebase.js'
-import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore'
+import { collection, addDoc, deleteDoc, doc, getDocs } from 'firebase/firestore'
 
 export default {
   props: {
@@ -52,6 +52,15 @@ export default {
     const favoriteCollection = collection(db, 'favorite')
     async function addFavorite(user) {
       try {
+        const favoriteCollection = collection(db, 'favorite')
+        const response = await getDocs(favoriteCollection)
+
+        response.forEach((doc) => {
+          if (doc.data().email === user.email) {
+            throw new Error('repeat')
+          }
+        })
+
         const newDoc = await addDoc(favoriteCollection, {
           picture: {
             large: user.picture.large,
@@ -75,6 +84,16 @@ export default {
         })
       } catch (error) {
         console.log(error)
+
+        if (error.message.includes('repeat')) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'User already exists',
+            text: 'This user is already in your favorite',
+          })
+          return
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -117,7 +136,7 @@ export default {
     .user-location {{user.location.city + ', ' + user.location.country}}
     ButtonComponent.mb-2(v-if="$route.name === 'users'" :text="'add'" @click.stop.prevent="showModal = false; addFavorite(user)")
     ButtonComponent.mb-2.remove(v-else :text="'remove'" @click.stop.prevent="showModal = false; deleteFavorite(user); $emit('updateFavorite', user)")
-//- card mode 的樣板
+//- list mode 的樣板
 .cards-list(v-if="currentMode === 'list'" )
   .card-list(v-for="user in filterUsers" @click="showModal = true; showUserModal(user)" @blur="showModal = false")
     .user-avatar-list
@@ -163,11 +182,11 @@ vue-final-modal(v-model="showModal")
 }
 
 .user-name {
-  @apply text-xl font-bold mt-2;
+  @apply text-xl font-bold mt-2 text-center;
 }
 
 .user-location {
-  @apply text-sm my-2;
+  @apply text-sm my-2 text-center;
 }
 
 .cards-list {
