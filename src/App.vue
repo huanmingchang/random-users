@@ -9,11 +9,16 @@ export default {
     const route = useRoute()
 
     onBeforeMount(() => {
+      const pathWithAuthentication = ['/users', '/favorite']
+      const pathWithoutAuthentication = ['/login', '/register']
+
       const auth = getAuth()
       onAuthStateChanged(auth, (user) => {
-        if (!user) {
+        if (!user && pathWithAuthentication.includes(route.path)) {
           router.push('/login')
-        } else if (route.path === '/login' || route.path === '/register') {
+        }
+
+        if (user && pathWithoutAuthentication.includes(route.path)) {
           router.push('/')
         }
       })
