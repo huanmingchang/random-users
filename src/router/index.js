@@ -29,7 +29,7 @@ const routes = [
     component: () => import('../views/Favorite.vue'),
   },
   {
-    path: '/:catchAll(.*)',
+    path: '/:pathMatch(.*)*',
     name: 'Not-found',
     component: () => import('../views/NotFound.vue'),
   },
