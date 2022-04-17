@@ -1,5 +1,6 @@
 <script>
 import { ref, computed, onMounted, onUpdated, watch } from 'vue'
+import Navbar from '../components/Navbar.vue'
 import Options from '../components/Options.vue'
 import UserCard from '../components/UserCard.vue'
 import Pagination from '../components/Pagination.vue'
@@ -11,6 +12,7 @@ import { collection, getDocs } from 'firebase/firestore'
 
 export default {
   components: {
+    Navbar,
     UserCard,
     Options,
     Pagination,
@@ -163,6 +165,7 @@ export default {
 </script>
 
 <template lang="pug">
+Navbar
 Spinner(v-if="isLoading")
 main(v-else)
   .no-content(v-if="!favoriteUser.length") There is no favorite user yet.
