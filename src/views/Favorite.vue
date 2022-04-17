@@ -9,6 +9,7 @@ import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import { db } from '../firebase.js'
 import { collection, getDocs } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 
 export default {
   components: {
@@ -98,8 +99,9 @@ export default {
     onMounted(async function fetchFavorite() {
       try {
         isLoading.value = true
-
-        const favoriteCollection = collection(db, 'favorite')
+        const auth = getAuth()
+        const currentUser = auth.currentUser
+        const favoriteCollection = collection(db, currentUser.uid)
         const response = await getDocs(favoriteCollection)
         response.forEach((doc) => {
           favoriteUser.value.push({ ...doc.data(), id: doc.id })
